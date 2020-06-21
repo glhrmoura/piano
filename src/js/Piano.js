@@ -1,5 +1,7 @@
+import { isTouchDevice } from './util';
+
 export default class Piano {
-  constructor (config) {
+  constructor (config = {}) {
     if (!config.notes) {
       throw new Error('Passing the config.notes parameter is mandatory');
     }
@@ -13,21 +15,6 @@ export default class Piano {
     }
 
     this.notes[note].play();
-  }
-
-  isTouchDevice () {
-    var prefixes = ' -webkit- -moz- -o- -ms- '.split(' ');
-    var mq = function (query) {
-      return window.matchMedia(query).matches;
-    };
-    if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
-      return true;
-    }
-  
-    // include the 'heartz' as a way to have a non matching MQ to help terminate the join
-    // https://git.io/vznFH
-    var query = ['(', prefixes.join('touch-enabled),('), 'heartz', ')'].join('');
-    return mq(query);
   }
 
   addKeyboardEvents () {
@@ -61,7 +48,7 @@ export default class Piano {
         this.playNote(note);
       };
     
-      if (this.isTouchDevice()) {
+      if (isTouchDevice()) {
         key.addEventListener('touchstart', handler);
       } else {
         key.addEventListener('mousedown', handler);
