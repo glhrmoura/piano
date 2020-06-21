@@ -1,10 +1,12 @@
 export const isTouchDevice = () => {
   const prefixes = ' -webkit- -moz- -o- -ms- '.split(' ');
-  const mq = (query) => {
-    return window.matchMedia(query).matches;
-  };
+  const mq = query => window.matchMedia(query).matches;
 
-  if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
+  if (
+    ('ontouchstart' in window) ||
+    window.DocumentTouch &&
+    document instanceof DocumentTouch
+  ) {
     return true;
   }
 
