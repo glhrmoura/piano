@@ -1,0 +1,29 @@
+.piano {
+  width: 100%;
+  height: 80vh;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url(https://images.squarespace-cdn.com/content/v1/555e33fbe4b0b5279febadb4/1435341540843-586PJDD58MKCSY5B7DO0/ke17ZwdGBToddI8pDm48kKeJmj7-arhq45_KcFUwUep7gQa3H78H3Y0txjaiv_0fDoOvxcdMmMKkDsyUqMSsMWxHk725yiiHCCLfrh8O1z5QPOohDIaIeljMHgDF5CVlOqpeNLcJ80NK65_fV7S1Ua0VbEIGLoHAa3oDyPT3uDFWB8sgv7M7O8BXIxJPtamV9Aa7pjcgczeZz4RiAJynZQ/black-desk.jpg?format=1500w);
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0px 3% 5% 3%;
+  box-sizing: border-box;
+
+  @media (min-height: 440px) {
+    height: 60vh;
+  }
+
+  @media (max-width: 400px) {
+    [dt-on] {
+      display: none;
+    }
+  }
+} 
+
+.piano__keyboard {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  max-width: 1200px;
+}
