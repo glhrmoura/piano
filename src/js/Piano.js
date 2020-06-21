@@ -15,6 +15,21 @@ export default class Piano {
     this.notes[note].play();
   }
 
+  isTouchDevice () {
+    var prefixes = ' -webkit- -moz- -o- -ms- '.split(' ');
+    var mq = function (query) {
+      return window.matchMedia(query).matches;
+    };
+    if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
+      return true;
+    }
+  
+    // include the 'heartz' as a way to have a non matching MQ to help terminate the join
+    // https://git.io/vznFH
+    var query = ['(', prefixes.join('touch-enabled),('), 'heartz', ')'].join('');
+    return mq(query);
+  }
+
   addKeyboardEvents () {
     window.addEventListener('keydown', (event) => {
       const $pianoKey = document.querySelector(`[data-key-code='${event.which}']`);
@@ -41,10 +56,16 @@ export default class Piano {
   
   addClickEvents () {
     document.querySelectorAll('[data-key-code]').forEach((key) => {
-      key.addEventListener('mousedown', (event) => {
+      const handler = (event) => {
         const note = key.getAttribute('data-note');
         this.playNote(note);
-      });
+      };
+    
+      if (this.isTouchDevice()) {
+        key.addEventListener('touchstart', handler);
+      } else {
+        key.addEventListener('mousedown', handler);
+      }
     });
   }
   
