@@ -27,7 +27,7 @@ const initMinimap = () => {
 
 const initHandlers = () => {
   const preventHandler = event => event.preventDefault();
-  const getScrollHandler = fat => event => {
+  const getScrollHandler = fat => () => {
     $keyboardCotainer.scrollTo({
       top: 0,
       left: $keyboardCotainer.scrollLeft + fat,
@@ -59,7 +59,7 @@ const addKeyboardEvents = () => {
 
     $pianoKey.classList.remove('active');
   });
-}
+};
   
 const addClickEvents = () => {
   document.querySelectorAll('[data-key-code]').forEach((key) => {
@@ -74,14 +74,14 @@ const addClickEvents = () => {
       key.addEventListener('mousedown', handler);
     }
   });
-}
+};
 
 const install = () => {
   initMinimap();
   initHandlers();
   addClickEvents();
   addKeyboardEvents();
-}
+};
 
 export {
   install,
