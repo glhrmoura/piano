@@ -35,7 +35,7 @@ module.exports = {
     }),
     new CopyPlugin({
       patterns: [
-        { from: 'src/audio', to: 'audio' }
+        { from: 'src/audio', to: 'audio' },
       ]
     })
   ],
