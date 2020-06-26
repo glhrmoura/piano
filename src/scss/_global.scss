@@ -2,4 +2,14 @@ html, body {
   margin: 0px;
   width: 100%;
   height: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#map {
+  width: 60% !important;
+  height: 8vh !important;
+  z-index: 0;
+  border: 1.5vh solid #000;
+  border-radius: 1vh;
+  box-shadow: 1px 1px 4px 0px rgba(255, 255, 255, 0.123);
 }
