@@ -21,6 +21,15 @@
   box-sizing: border-box;
 }
 
+.piano__dashboard__minimap {
+  width: 60% !important;
+  height: 8vh !important;
+  z-index: 0;
+  border: 1.5vh solid #000;
+  border-radius: 1vh;
+  box-shadow: 1px 1px 4px 0px rgba(255, 255, 255, 0.123);
+}
+
 .piano__dashboard__btn {
   flex-shrink: 0;
   display: flex;
@@ -126,7 +135,7 @@
   box-shadow:
     inset 0px -4px 3px 1px #ffffff9c,
     0px 1vw 4px 0px #3d3d3d,
-    0px .9vw 2px 1vw #000000;
+    0px calc(1vw - 1px) 2px 1vw #000000;
   position: absolute;
   transform: translateX(50%);
   z-index: 10;
