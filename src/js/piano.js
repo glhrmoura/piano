@@ -2,22 +2,16 @@ import pagemap from 'pagemap';
 import { notes } from './notes';
 import { isTouchDevice } from './util';
 
-const $keyboardCotainer = document.querySelector('.piano__keyboard-container');
 const $btnPrev = document.querySelector('.piano__dashboard__btn-prev');
 const $btnNext = document.querySelector('.piano__dashboard__btn-next');
-
-const playNote = (note) => {
-  if (!notes[note]) return;
-
-  notes[note].play();
-}
+const $keyboardCotainer = document.querySelector('.piano__keyboard-container');
 
 const initMinimap = () => {
-  pagemap(document.querySelector('#map'), {
+  pagemap(document.querySelector('.piano__dashboard__minimap'), {
     viewport: document.querySelector('.piano__keyboard-container'),
-    back: 'rgb(0,0,0)',
-    view: 'rgba(0,0,0,0.5)',
-    drag: 'rgba(0,0,0,0.5)',
+    back: 'rgb(0, 0, 0)',
+    view: 'rgba(0, 0, 0, 0.5)',
+    drag: 'rgba(0, 0, 0, 0.5)',
     styles: {
       '.piano__keyboard__key--white': '#fff',
       '.piano__keyboard__key--black': '#000',
@@ -40,6 +34,12 @@ const initHandlers = () => {
   $keyboardCotainer.addEventListener('touchmove', preventHandler);
   $keyboardCotainer.addEventListener('DOMMouseScroll', preventHandler);
 };
+
+const playNote = (note) => {
+  if (!notes[note]) return;
+
+  notes[note].play();
+}
 
 const addKeyboardEvents = () => {
   window.addEventListener('keydown', (event) => {
