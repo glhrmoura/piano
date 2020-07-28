@@ -26,6 +26,10 @@ To prepare the project to be launched in production, just run the command
 npm build
 ```
 
+## Online
+
+[Play Piano](https://frosty-einstein-318109.netlify.app)
+
 ## Authors
 
 * **Guilherme Moura** - [Github](https://github.com/mouraggui)
