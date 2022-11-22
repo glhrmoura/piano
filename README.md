@@ -1,3 +1,10 @@
+<p align="center">
+  <img
+    style="object: contain; height: 150px"
+    src="https://raw.githubusercontent.com/glhrmoura/play-piano/master/src/images/logo.png"
+  />
+</p>
+
 # 🎹 Play Piano
 
 A complete piano application made with HTML, CSS and JS
