@@ -30,6 +30,6 @@ npm build
 
 ### License
 
-[MIT](https://github.com/glhrmoura/play-piano/blob/main/LICENSE)
+[MIT](https://github.com/glhrmoura/play-piano/blob/master/LICENSE)
 
 Copyright (c) Guilherme Moura
