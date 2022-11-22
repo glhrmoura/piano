@@ -2,9 +2,11 @@
 
 A complete piano application made with HTML, CSS and JS
 
-## Installing
+## Demo
 
-Enter the project folder and run the command:
+[Play Piano](https://frosty-einstein-318109.netlify.app)
+
+## Installing
 
 ```
 npm install
@@ -12,7 +14,7 @@ npm install
 
 ## Execution
 
-When the installation has finished run the command
+When the installation has finished run the command.
 
 ```
 npm start
@@ -20,16 +22,14 @@ npm start
 
 ## Deployment
 
-To prepare the project to be launched in production, just run the command
+To prepare the project to be launched in production, just run the command.
 
 ```
 npm build
 ```
 
-## Online
+### License
 
-[Play Piano](https://frosty-einstein-318109.netlify.app)
+[MIT](https://github.com/glhrmoura/play-piano/blob/main/LICENSE)
 
-## Authors
-
-* **Guilherme Moura** - [Github](https://github.com/mouraggui)
+Copyright (c) Guilherme Moura
