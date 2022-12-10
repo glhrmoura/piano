@@ -11,7 +11,7 @@ A complete piano application made with HTML, CSS and JS
 
 ## Demo
 
-[Play Piano](https://frosty-einstein-318109.netlify.app)
+[Play Piano](https://prismatic-crepe-1793eb.netlify.app)
 
 ## Installing
 
