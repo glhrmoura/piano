@@ -5,7 +5,7 @@
   />
 </p>
 
-# 🎹 Play Piano
+# Play Piano
 
 A complete piano application made with HTML, CSS and JS
 
