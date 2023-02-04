@@ -7,7 +7,7 @@
 
 # Play Piano
 
-A fully functional piano application made with HTML, CSS and JavaScript, offering all the key options that are found in a real instrument. With interactive keys and authentic piano sounds, the application allows users to experience the feeling of playing a real piano.
+Fully functional piano application made with HTML, CSS and JavaScript, offering all the key options that are found in a real instrument. With interactive keys and authentic piano sounds, the application allows users to experience the feeling of playing a real piano.
 
 ## Demo
 
