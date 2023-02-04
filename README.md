@@ -7,32 +7,24 @@
 
 # Play Piano
 
-A complete piano application made with HTML, CSS and JS
+A fully functional piano application made with HTML, CSS and JavaScript, offering all the key options that are found in a real instrument. With interactive keys and authentic piano sounds, the application allows users to experience the feeling of playing a real piano.
 
 ## Demo
 
 [Play Piano](https://prismatic-crepe-1793eb.netlify.app)
 
-## Installing
+## Setup
+
+### Install
 
 ```
 npm install
 ```
 
-## Execution
-
-When the installation has finished run the command.
+### Run
 
 ```
 npm start
-```
-
-## Deployment
-
-To prepare the project to be launched in production, just run the command.
-
-```
-npm build
 ```
 
 ### License
