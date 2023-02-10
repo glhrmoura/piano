@@ -11,7 +11,7 @@ Fully functional piano application made with HTML, CSS and JavaScript, offering 
 
 ## Demo
 
-[**Piano**](https://prismatic-crepe-1793eb.netlify.app)
+[**Piano**](https://exquisite-pie-01cc07.netlify.app/)
 
 ## Setup
 
