@@ -18,13 +18,13 @@ Fully functional piano application made with HTML, CSS and JavaScript, offering 
 ### Install
 
 ```
-npm install
+yarn install
 ```
 
 ### Run
 
 ```
-npm start
+yarn start
 ```
 
 ### License
