@@ -2,12 +2,16 @@
   "name": "piano",
   "version": "1.0.0",
   "main": "index.js",
+  "author": "Guilherme Moura <mouraggui@gmail.com>",
+  "license": "ISC",
   "scripts": {
     "build": "webpack",
     "start": "webpack-dev-server"
   },
-  "author": "Guilherme Moura <mouraggui@gmail.com>",
-  "license": "ISC",
+  "dependencies": {
+    "howler": "^2.2.0",
+    "pagemap": "^1.3.0"
+  },
   "devDependencies": {
     "copy-webpack-plugin": "^6.0.2",
     "css-loader": "^3.6.0",
@@ -16,12 +20,8 @@
     "sass": "^1.26.8",
     "sass-loader": "^8.0.2",
     "style-loader": "^1.2.1",
-    "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.12",
-    "webpack-dev-server": "^3.11.0"
-  },
-  "dependencies": {
-    "howler": "^2.2.0",
-    "pagemap": "^1.3.0"
+    "webpack": "^5.80.0",
+    "webpack-cli": "^5.0.2",
+    "webpack-dev-server": "^4.13.3"
   }
 }
