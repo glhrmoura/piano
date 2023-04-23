@@ -1,5 +1,7 @@
 import pagemap from 'pagemap';
+
 import { notes } from './notes';
+
 import { isTouchDevice } from './util';
 
 const $btnPrev = document.querySelector('.piano__dashboard__btn-prev');
@@ -36,9 +38,7 @@ const initHandlers = () => {
 };
 
 const playNote = (note) => {
-  if (!notes[note]) return;
-
-  notes[note].play();
+  notes[note]?.play();
 }
 
 const addKeyboardEvents = () => {
@@ -65,6 +65,7 @@ const addClickEvents = () => {
   document.querySelectorAll('[data-key-code]').forEach((key) => {
     const handler = () => {
       const note = key.getAttribute('data-note');
+
       playNote(note);
     };
   
