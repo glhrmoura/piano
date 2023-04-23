@@ -1,5 +1,5 @@
 .piano {
-  display: grid;
+  display: grid !important;
   grid-template-columns: 1fr;
   grid-template-rows: .35fr 1fr;
   width: 100vw;
