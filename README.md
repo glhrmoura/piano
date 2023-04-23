@@ -27,7 +27,7 @@ yarn install
 yarn start
 ```
 
-## License
+### License
 
 [MIT](https://github.com/glhrmoura/piano/blob/master/LICENSE)
 
