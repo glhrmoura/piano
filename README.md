@@ -13,20 +13,6 @@ Fully functional piano application made with HTML, CSS and JavaScript, offering 
 
 [**Piano**](https://exquisite-pie-01cc07.netlify.app/)
 
-### Setup
-
-#### Install
-
-```
-yarn install
-```
-
-#### Run
-
-```
-yarn start
-```
-
 ### License
 
 [MIT](https://github.com/glhrmoura/piano/blob/master/LICENSE)
