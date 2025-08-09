@@ -47,13 +47,30 @@ export const PianoKey: React.FC<PianoKeyProps> = ({
     }
   }, [isTouchDevice]);
 
-  const className = `piano__keyboard__key--${isBlack ? 'black' : 'white'} ${
-    isActive ? 'active' : ''
-  }`;
+  const baseClasses = isBlack
+    ? "absolute top-0 w-[65%] rounded-b-[0.2vw] bg-black piano-key-black box-border"
+    : "w-full rounded-b-[0.5vw] bg-white piano-key-white";
+
+  const shadowClasses = isBlack
+    ? isActive
+      ? "shadow-[var(--shadow-piano-black-active)]"
+      : "shadow-[var(--shadow-piano-black)]"
+    : isActive
+      ? "shadow-[var(--shadow-piano-white-active)]"
+      : "shadow-[var(--shadow-piano-white)]";
+
+  const heightClasses = isBlack
+    ? isActive
+      ? "h-[calc(65%+1vw)]"
+      : "h-[65%]"
+    : isActive
+      ? "h-[99%]"
+      : "h-full";
 
   return (
     <div
-      className={className}
+      className={`${baseClasses} ${heightClasses} ${shadowClasses} ${isActive ? 'active' : ''}`}
+      style={isBlack ? { zIndex: 999999, position: 'absolute' } : { zIndex: 1, position: 'relative' }}
       data-key-code={keyCode}
       data-note={note}
       onMouseDown={handleMouseDown}

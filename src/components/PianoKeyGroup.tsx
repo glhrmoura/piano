@@ -13,12 +13,14 @@ export const PianoKeyGroup: React.FC<PianoKeyGroupProps> = ({
   onPlay
 }) => {
   return (
-    <div className="piano__keyboard__key">
+    <div className="relative w-[12vw] min-w-[85px] flex-shrink-0 mx-0.5 cursor-pointer piano-key-group">
+      {/* Render white key first */}
       <PianoKey
         keyCode={whiteKey.keyCode}
         note={whiteKey.note}
         onPlay={onPlay}
       />
+      {/* Render black key AFTER white key in DOM order */}
       {blackKey && (
         <PianoKey
           keyCode={blackKey.keyCode}

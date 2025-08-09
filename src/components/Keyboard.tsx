@@ -81,8 +81,8 @@ export const Keyboard = forwardRef<HTMLDivElement, KeyboardProps>(({ onPlay }, r
   ];
 
   return (
-    <div className="piano__keyboard-container" ref={ref || keyboardRef}>
-      <div className="piano__keyboard">
+    <div className="w-full h-full overflow-auto scrollbar-hide" ref={ref || keyboardRef}>
+      <div className="flex w-max min-w-[800px] h-full box-border px-1.5 pb-4 bg-[--color-piano-bg]">
         {keyGroups.map((group, index) => (
           <PianoKeyGroup
             key={index}

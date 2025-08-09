@@ -1,6 +1,6 @@
 import React from 'react';
 import { Piano } from '@/components/Piano';
-import '@/scss/index.scss';
+import '@/index.css';
 
 const App: React.FC = () => {
   return (
