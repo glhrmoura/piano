@@ -1,16 +1,16 @@
 import pagemap from 'pagemap';
 
-import { notes } from './notes';
+import { notes } from './notes.ts';
 
-import { isTouchDevice } from './util';
+import { isTouchDevice } from './util.ts';
 
-const $btnPrev = document.querySelector('.piano__dashboard__btn-prev');
-const $btnNext = document.querySelector('.piano__dashboard__btn-next');
-const $keyboardCotainer = document.querySelector('.piano__keyboard-container');
+const $btnPrev = document.querySelector('.piano__dashboard__btn-prev') as HTMLButtonElement;
+const $btnNext = document.querySelector('.piano__dashboard__btn-next') as HTMLButtonElement;
+const $keyboardCotainer = document.querySelector('.piano__keyboard-container') as HTMLElement;
 
-const initMinimap = () => {
-  pagemap(document.querySelector('.piano__dashboard__minimap'), {
-    viewport: document.querySelector('.piano__keyboard-container'),
+const initMinimap = (): void => {
+  pagemap(document.querySelector('.piano__dashboard__minimap') as HTMLCanvasElement, {
+    viewport: document.querySelector('.piano__keyboard-container') as HTMLElement,
     back: 'rgb(0, 0, 0)',
     view: 'rgba(0, 0, 0, 0.5)',
     drag: 'rgba(0, 0, 0, 0.5)',
@@ -21,9 +21,9 @@ const initMinimap = () => {
   });
 };
 
-const initHandlers = () => {
-  const preventHandler = event => event.preventDefault();
-  const getScrollHandler = fat => () => {
+const initHandlers = (): void => {
+  const preventHandler = (event: Event): void => event.preventDefault();
+  const getScrollHandler = (fat: number) => (): void => {
     $keyboardCotainer.scrollTo({
       top: 0,
       left: $keyboardCotainer.scrollLeft + fat,
@@ -37,23 +37,25 @@ const initHandlers = () => {
   $keyboardCotainer.addEventListener('DOMMouseScroll', preventHandler);
 };
 
-const playNote = (note) => {
+const playNote = (note: string): void => {
   notes[note]?.play();
 }
 
-const addKeyboardEvents = () => {
-  window.addEventListener('keydown', (event) => {
-    const $pianoKey = document.querySelector(`[data-key-code='${event.which}']`);
+const addKeyboardEvents = (): void => {
+  window.addEventListener('keydown', (event: KeyboardEvent) => {
+    const $pianoKey = document.querySelector(`[data-key-code='${event.which}']`) as HTMLElement;
 
     if (!$pianoKey) return;
 
     const note = $pianoKey.getAttribute('data-note');
+    if (!note) return;
+    
     $pianoKey.classList.add('active');
     playNote(note);
   });
 
-  window.addEventListener('keyup', (event) => {
-    const $pianoKey = document.querySelector(`[data-key-code='${event.which}']`);
+  window.addEventListener('keyup', (event: KeyboardEvent) => {
+    const $pianoKey = document.querySelector(`[data-key-code='${event.which}']`) as HTMLElement;
 
     if (!$pianoKey) return;
 
@@ -61,10 +63,11 @@ const addKeyboardEvents = () => {
   });
 };
   
-const addClickEvents = () => {
+const addClickEvents = (): void => {
   document.querySelectorAll('[data-key-code]').forEach((key) => {
-    const handler = () => {
+    const handler = (): void => {
       const note = key.getAttribute('data-note');
+      if (!note) return;
 
       playNote(note);
     };
@@ -77,7 +80,7 @@ const addClickEvents = () => {
   });
 };
 
-const install = () => {
+const install = (): void => {
   initMinimap();
   initHandlers();
   addClickEvents();

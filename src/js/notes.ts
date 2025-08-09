@@ -1,6 +1,8 @@
 import { Howl } from 'howler';
 
-const notes = {
+type NotesType = Record<string, Howl>;
+
+const notes: NotesType = {
   'A0': new Howl({ src: ['audio/A0.mp3'] }),
   'A0s': new Howl({ src: ['audio/A0s.mp3'] }),
   'B0': new Howl({ src: ['audio/B0.mp3'] }),
