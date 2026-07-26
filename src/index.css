@@ -42,8 +42,8 @@ body,
   --shadow-piano-black-hole:
     0 0 0 0.55vw #000000;
   --shadow-piano-black-inset:
-    inset 0 1px 0 rgba(255, 255, 255, 0.14),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.35);
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 3px 6px rgba(0, 0, 0, 0.35);
   --shadow-piano-black-inset-active:
     inset 4px 0 6px -2px rgba(0, 0, 0, 0.55),
     inset -4px 0 6px -2px rgba(0, 0, 0, 0.55),
@@ -167,13 +167,16 @@ body,
   background-image:
     linear-gradient(
       180deg,
-      #4a453f 0%,
-      #322e2a 35%,
-      #25211e 100%
+      #1c1916 0%,
+      #302c28 55%,
+      #3f3a35 100%
     );
   box-shadow: var(--shadow-piano-black-inset);
   border-radius: 0;
-  transition: height 0.08s ease, box-shadow 0.08s ease, filter 0.18s ease;
+  transition:
+    height 0.28s cubic-bezier(0.33, 1, 0.68, 1),
+    box-shadow 0.28s cubic-bezier(0.33, 1, 0.68, 1),
+    filter 0.18s ease;
 }
 
 .piano-key-black:hover {
@@ -187,7 +190,7 @@ body,
 
 .piano-key-black.active,
 .piano-key-black:active {
-  height: calc(100% - 0.7vw) !important;
+  height: calc(100% - 0.35vw) !important;
   box-shadow: var(--shadow-piano-black-inset-active) !important;
 }
 
