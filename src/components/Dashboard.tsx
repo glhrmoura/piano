@@ -19,8 +19,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
       pagemap(minimapRef.current, {
         viewport: keyboardRef.current,
         back: 'rgb(26, 26, 26)',
-        view: 'rgba(74, 144, 226, 0.3)',
-        drag: 'rgba(74, 144, 226, 0.5)',
+        view: 'rgba(0, 0, 0, 0.35)',
+        drag: 'rgba(0, 0, 0, 0.5)',
         styles: {
           '.piano-key-white': '#E8E8E8',
           '.piano-key-black': '#2A2A2A',

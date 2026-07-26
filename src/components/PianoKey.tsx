@@ -47,36 +47,37 @@ export const PianoKey: React.FC<PianoKeyProps> = ({
     }
   }, [isTouchDevice]);
 
-  const baseClasses = isBlack
-    ? "absolute top-0 w-[65%] rounded-b-[0.2vw] bg-black piano-key-black box-border"
-    : "w-full rounded-b-[0.5vw] bg-white piano-key-white";
+  const interactionProps = {
+    'data-key-code': keyCode,
+    'data-note': note,
+    onMouseDown: handleMouseDown,
+    onMouseUp: handleMouseUp,
+    onTouchStart: handleTouchStart,
+    onTouchEnd: handleTouchEnd,
+  };
 
-  const shadowClasses = isBlack
-    ? isActive
-      ? "shadow-[var(--shadow-piano-black-active)]"
-      : "shadow-[var(--shadow-piano-black)]"
-    : isActive
-      ? "shadow-[var(--shadow-piano-white-active)]"
-      : "shadow-[var(--shadow-piano-white)]";
-
-  const heightClasses = isBlack
-    ? isActive
-      ? "h-[calc(65%+1vw)]"
-      : "h-[65%]"
-    : isActive
-      ? "h-[99%]"
-      : "h-full";
+  if (isBlack) {
+    return (
+      <div className="piano-key-black-slot absolute top-0 w-[65%] h-[65%] shadow-[var(--shadow-piano-black-hole)] box-border">
+        <div
+          className={`w-full rounded-b-[0.2vw] bg-black piano-key-black box-border shadow-[var(--shadow-piano-black-inset)] ${
+            isActive ? 'h-[calc(100%+1vw)] active' : 'h-full'
+          }`}
+          {...interactionProps}
+        />
+      </div>
+    );
+  }
 
   return (
     <div
-      className={`${baseClasses} ${heightClasses} ${shadowClasses} ${isActive ? 'active' : ''}`}
-      style={isBlack ? { zIndex: 999999, position: 'absolute' } : { zIndex: 1, position: 'relative' }}
-      data-key-code={keyCode}
-      data-note={note}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
+      className={`w-full rounded-b-[0.5vw] bg-white piano-key-white ${
+        isActive
+          ? 'h-[99%] shadow-[var(--shadow-piano-white-active)] active'
+          : 'h-full shadow-[var(--shadow-piano-white)]'
+      }`}
+      style={{ zIndex: 1, position: 'relative' }}
+      {...interactionProps}
     />
   );
 };

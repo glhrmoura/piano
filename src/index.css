@@ -34,14 +34,12 @@ html, body {
     inset 0px -5px 15px rgb(37, 37, 37),
     -3px 4px 6px rgba(0,0,0, .5);
 
-  --shadow-piano-black:
-    inset 0px -4px 3px 1px #ffffff9c,
+  --shadow-piano-black-hole:
     0px 1vw 4px 0px #3d3d3d,
     0px calc(1vw - 1px) 2px 1vw #000000;
 
-  --shadow-piano-black-active:
-    inset 0px -4px 3px 1px #ffffff9c,
-    0px -1px 2px 1vw #000000;
+  --shadow-piano-black-inset:
+    inset 0px -4px 3px 1px #ffffff9c;
 }
 
 .scrollbar-hide {
@@ -62,7 +60,7 @@ html, body {
 .piano-key-black {
   background-color: #000;
   background-image: radial-gradient(ellipse farthest-corner at 40px -100px, #ffffff4d, #000);
-  transition: height 0.075s ease, box-shadow 0.075s ease;
+  transition: height 0.075s ease;
 }
 
 .piano-key-white.active,
@@ -72,7 +70,7 @@ html, body {
 
 .piano-key-black.active,
 .piano-key-black:active {
-  height: calc(65% + 1vw) !important;
+  height: calc(100% + 1vw) !important;
 }
 
 .piano-key-white,
@@ -87,6 +85,11 @@ html, body {
 
 .piano-key-group {
   position: relative;
+  isolation: auto;
+}
+
+.piano-key-group * {
+  transform-style: flat;
 }
 
 .piano-key-white {
@@ -94,30 +97,19 @@ html, body {
   z-index: 1;
 }
 
-.piano-key-black {
+.piano-key-black-slot {
   position: absolute !important;
   top: 0 !important;
   right: 0px !important;
   transform: translateX(50%) !important;
   z-index: 999999 !important;
+  isolation: isolate !important;
 }
 
-div.piano-key-black,
+.piano-key-black-slot .piano-key-black,
 .piano-key-black[data-note$="s"],
 [data-note$="s"],
 div[data-note$="s"] {
-  z-index: 999999 !important;
-  position: absolute !important;
-}
-
-.piano-key-group * {
-  transform-style: flat;
-}
-
-.piano-key-group {
-  isolation: auto;
-}
-
-.piano-key-black {
-  isolation: isolate !important;
+  position: relative !important;
+  z-index: 1 !important;
 }
