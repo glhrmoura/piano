@@ -60,7 +60,7 @@ export const Piano: React.FC = () => {
   }, [playNote]);
 
   return (
-    <div className="grid grid-cols-1 grid-rows-[0.35fr_1fr] w-screen h-screen bg-cover bg-no-repeat box-border">
+    <div className="piano-shell relative grid h-screen w-screen grid-cols-1 grid-rows-[0.28fr_1fr] box-border overflow-hidden">
       <Dashboard onPrevious={handlePrevious} onNext={handleNext} keyboardRef={keyboardRef} />
       <Keyboard onPlay={playNote} ref={keyboardRef} />
     </div>
