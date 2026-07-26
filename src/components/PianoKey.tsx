@@ -21,47 +21,61 @@ export const PianoKey: React.FC<PianoKeyProps> = ({
     onPlay(note);
   }, [note, onPlay]);
 
+  const press = useCallback(() => {
+    setIsActive(true);
+    handlePlay();
+  }, [handlePlay]);
+
+  const release = useCallback(() => {
+    setIsActive(false);
+  }, []);
+
   const handleMouseDown = useCallback(() => {
     if (!isTouchDevice()) {
-      setIsActive(true);
-      handlePlay();
+      press();
     }
-  }, [handlePlay, isTouchDevice]);
+  }, [press, isTouchDevice]);
 
   const handleMouseUp = useCallback(() => {
     if (!isTouchDevice()) {
-      setIsActive(false);
+      release();
     }
-  }, [isTouchDevice]);
+  }, [release, isTouchDevice]);
+
+  const handleMouseLeave = useCallback(() => {
+    if (!isTouchDevice()) {
+      release();
+    }
+  }, [release, isTouchDevice]);
 
   const handleTouchStart = useCallback(() => {
     if (isTouchDevice()) {
-      setIsActive(true);
-      handlePlay();
+      press();
     }
-  }, [handlePlay, isTouchDevice]);
+  }, [press, isTouchDevice]);
 
   const handleTouchEnd = useCallback(() => {
     if (isTouchDevice()) {
-      setIsActive(false);
+      release();
     }
-  }, [isTouchDevice]);
+  }, [release, isTouchDevice]);
 
   const interactionProps = {
     'data-key-code': keyCode,
     'data-note': note,
     onMouseDown: handleMouseDown,
     onMouseUp: handleMouseUp,
+    onMouseLeave: handleMouseLeave,
     onTouchStart: handleTouchStart,
     onTouchEnd: handleTouchEnd,
   };
 
   if (isBlack) {
     return (
-      <div className="piano-key-black-slot absolute top-0 w-[65%] h-[65%] shadow-[var(--shadow-piano-black-hole)] box-border">
+      <div className="piano-key-black-slot absolute top-0 box-border h-[62%] w-[58%] shadow-[var(--shadow-piano-black-hole)]">
         <div
-          className={`w-full rounded-b-[0.2vw] bg-black piano-key-black box-border shadow-[var(--shadow-piano-black-inset)] ${
-            isActive ? 'h-[calc(100%+1vw)] active' : 'h-full'
+          className={`piano-key-black box-border w-full ${
+            isActive ? 'active h-[calc(100%-0.7vw)]' : 'h-full'
           }`}
           {...interactionProps}
         />
@@ -71,9 +85,9 @@ export const PianoKey: React.FC<PianoKeyProps> = ({
 
   return (
     <div
-      className={`w-full rounded-b-[0.5vw] bg-white piano-key-white ${
+      className={`piano-key-white box-border w-full rounded-b-[0.35vw] ${
         isActive
-          ? 'h-[99%] shadow-[var(--shadow-piano-white-active)] active'
+          ? 'active h-[99%] shadow-[var(--shadow-piano-white-active)]'
           : 'h-full shadow-[var(--shadow-piano-white)]'
       }`}
       style={{ zIndex: 1, position: 'relative' }}
