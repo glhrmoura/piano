@@ -1,7 +1,8 @@
 <p align="center">
   <img
-    style="object: contain; height: 150px"
-    src="https://i.imgur.com/5KCCFYe.png"
+    style="object-fit: contain; height: 150px"
+    src="public/images/logo.png"
+    alt="Piano"
   />
 </p>
 
