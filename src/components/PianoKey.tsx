@@ -75,7 +75,7 @@ export const PianoKey: React.FC<PianoKeyProps> = ({
       <div className="piano-key-black-slot absolute top-0 box-border h-[62%] w-[58%] shadow-[var(--shadow-piano-black-hole)]">
         <div
           className={`piano-key-black box-border w-full ${
-            isActive ? 'active h-[calc(100%-0.7vw)]' : 'h-full'
+            isActive ? 'active h-[calc(100%-0.35vw)]' : 'h-full'
           }`}
           {...interactionProps}
         />
