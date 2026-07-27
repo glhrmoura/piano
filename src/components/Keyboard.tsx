@@ -1,4 +1,5 @@
 import { useRef, useEffect, useCallback, forwardRef } from 'react';
+import type { MutableRefObject } from 'react';
 import { PianoKeyGroup } from '@/components/PianoKeyGroup';
 
 interface KeyboardProps {
@@ -6,24 +7,51 @@ interface KeyboardProps {
 }
 
 export const Keyboard = forwardRef<HTMLDivElement, KeyboardProps>(({ onPlay }, ref) => {
-  const keyboardRef = useRef<HTMLDivElement>(null);
+  const localRef = useRef<HTMLDivElement | null>(null);
 
-  const preventHandler = useCallback((event: Event) => {
-    event.preventDefault();
-  }, []);
+  const setRefs = useCallback((node: HTMLDivElement | null) => {
+    localRef.current = node;
+
+    if (typeof ref === 'function') {
+      ref(node);
+      return;
+    }
+
+    if (ref) {
+      (ref as MutableRefObject<HTMLDivElement | null>).current = node;
+    }
+  }, [ref]);
 
   useEffect(() => {
-    const keyboard = keyboardRef.current;
-    if (keyboard) {
-      keyboard.addEventListener('touchmove', preventHandler);
-      keyboard.addEventListener('DOMMouseScroll', preventHandler);
+    const keyboard = localRef.current;
+    if (!keyboard) return;
 
-      return () => {
-        keyboard.removeEventListener('touchmove', preventHandler);
-        keyboard.removeEventListener('DOMMouseScroll', preventHandler);
-      };
-    }
-  }, [preventHandler]);
+    let startX = 0;
+
+    const onTouchStart = (event: TouchEvent) => {
+      startX = event.touches[0]?.clientX ?? 0;
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      const currentX = event.touches[0]?.clientX ?? 0;
+      const deltaX = currentX - startX;
+      const maxScrollLeft = keyboard.scrollWidth - keyboard.clientWidth;
+      const atStart = keyboard.scrollLeft <= 0;
+      const atEnd = keyboard.scrollLeft >= maxScrollLeft - 1;
+
+      if ((atStart && deltaX > 0) || (atEnd && deltaX < 0)) {
+        event.preventDefault();
+      }
+    };
+
+    keyboard.addEventListener('touchstart', onTouchStart, { passive: true });
+    keyboard.addEventListener('touchmove', onTouchMove, { passive: false });
+
+    return () => {
+      keyboard.removeEventListener('touchstart', onTouchStart);
+      keyboard.removeEventListener('touchmove', onTouchMove);
+    };
+  }, []);
 
   const keyGroups = [
     { white: { keyCode: 20, note: 'A0' }, black: { keyCode: 81, note: 'A0s' } },
@@ -81,7 +109,7 @@ export const Keyboard = forwardRef<HTMLDivElement, KeyboardProps>(({ onPlay }, r
   ];
 
   return (
-    <div className="keyboard-bed relative z-0 h-full w-full overflow-auto scrollbar-hide" ref={ref || keyboardRef}>
+    <div className="keyboard-bed relative z-0 h-full w-full overflow-x-auto overflow-y-hidden scrollbar-hide" ref={setRefs}>
       <div className="box-border flex h-full w-max min-w-[800px] gap-[0.2vw] px-[1.2vw] pb-[1.8vh] pt-[0.6vh]">
         {keyGroups.map((group, index) => (
           <PianoKeyGroup

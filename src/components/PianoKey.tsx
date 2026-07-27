@@ -24,14 +24,25 @@ export const PianoKey: React.FC<PianoKeyProps> = ({
     setIsActive(false);
   }, []);
 
+  const handleTouchStart = useCallback((event: React.TouchEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    press();
+  }, [press]);
+
+  const handleTouchEnd = useCallback((event: React.TouchEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    release();
+  }, [release]);
+
   const handlePointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.button !== 0 && event.pointerType === 'mouse') return;
-    event.preventDefault();
+    if (event.pointerType === 'touch') return;
+    if (event.button !== 0) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     press();
   }, [press]);
 
   const handlePointerUp = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'touch') return;
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
@@ -41,6 +52,9 @@ export const PianoKey: React.FC<PianoKeyProps> = ({
   const interactionProps = {
     'data-key-code': keyCode,
     'data-note': note,
+    onTouchStart: handleTouchStart,
+    onTouchEnd: handleTouchEnd,
+    onTouchCancel: handleTouchEnd,
     onPointerDown: handlePointerDown,
     onPointerUp: handlePointerUp,
     onPointerCancel: handlePointerUp,

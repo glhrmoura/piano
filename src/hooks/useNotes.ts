@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
-import { Howl } from 'howler';
+import { useCallback, useRef } from 'react';
+import { Howl, Howler } from 'howler';
+import { isIOS, unlockAudio } from '@/utils/audio';
 
 type NotesType = Record<string, Howl>;
 
@@ -15,17 +16,59 @@ const NOTE_NAMES = [
   'C8',
 ] as const;
 
-export const useNotes = (): NotesType => {
-  const notes = useMemo(() => {
-    return NOTE_NAMES.reduce<NotesType>((acc, note) => {
-      acc[note] = new Howl({
-        src: [`/audio/${note}.mp3`],
-        preload: true,
-        html5: false,
-      });
-      return acc;
-    }, {});
+if (isIOS()) {
+  Howler.html5PoolSize = 25;
+}
+
+const createNote = (note: string): Howl => {
+  return new Howl({
+    src: [`/audio/${note}.mp3`],
+    preload: true,
+    html5: isIOS(),
+    format: ['mp3'],
+    xhr: {
+      method: 'GET',
+      withCredentials: false,
+    },
+  });
+};
+
+export const useNotes = () => {
+  const notesRef = useRef<NotesType>({});
+
+  const getNote = useCallback((note: string): Howl | undefined => {
+    if (!NOTE_NAMES.includes(note as typeof NOTE_NAMES[number])) {
+      return undefined;
+    }
+
+    if (!notesRef.current[note]) {
+      notesRef.current[note] = createNote(note);
+    }
+
+    return notesRef.current[note];
   }, []);
 
-  return notes;
+  const playNote = useCallback((note: string) => {
+    const sound = getNote(note);
+    if (!sound) return;
+
+    unlockAudio();
+
+    if (sound.playing()) {
+      sound.stop();
+    }
+
+    const playId = sound.play();
+
+    if (sound.state() !== 'loaded') {
+      sound.once('load', () => {
+        unlockAudio();
+        if (!sound.playing(playId)) {
+          sound.play();
+        }
+      });
+    }
+  }, [getNote]);
+
+  return { playNote };
 };

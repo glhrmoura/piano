@@ -6,16 +6,7 @@ import { unlockAudio } from '@/utils/audio';
 
 export const Piano: React.FC = () => {
   const keyboardRef = useRef<HTMLDivElement>(null);
-  const notes = useNotes();
-
-  const playNote = useCallback((note: string) => {
-    const sound = notes[note];
-    if (!sound) return;
-
-    unlockAudio();
-    sound.stop();
-    sound.play();
-  }, [notes]);
+  const { playNote } = useNotes();
 
   const handleScroll = useCallback((direction: number) => {
     if (keyboardRef.current) {
@@ -40,14 +31,16 @@ export const Piano: React.FC = () => {
       unlockAudio();
     };
 
-    window.addEventListener('pointerdown', unlockOnGesture, { once: true });
-    window.addEventListener('touchstart', unlockOnGesture, { once: true });
-    window.addEventListener('keydown', unlockOnGesture, { once: true });
+    document.addEventListener('touchstart', unlockOnGesture, { capture: true, passive: true });
+    document.addEventListener('touchend', unlockOnGesture, { capture: true, passive: true });
+    document.addEventListener('pointerdown', unlockOnGesture, { capture: true });
+    document.addEventListener('click', unlockOnGesture, { capture: true });
 
     return () => {
-      window.removeEventListener('pointerdown', unlockOnGesture);
-      window.removeEventListener('touchstart', unlockOnGesture);
-      window.removeEventListener('keydown', unlockOnGesture);
+      document.removeEventListener('touchstart', unlockOnGesture, true);
+      document.removeEventListener('touchend', unlockOnGesture, true);
+      document.removeEventListener('pointerdown', unlockOnGesture, true);
+      document.removeEventListener('click', unlockOnGesture, true);
     };
   }, []);
 
@@ -82,7 +75,7 @@ export const Piano: React.FC = () => {
   }, [playNote]);
 
   return (
-    <div className="piano-shell relative grid h-screen w-screen grid-cols-1 grid-rows-[0.28fr_1fr] box-border overflow-hidden">
+    <div className="piano-shell relative grid w-screen grid-cols-1 grid-rows-[0.28fr_1fr] box-border overflow-hidden">
       <Dashboard onPrevious={handlePrevious} onNext={handleNext} keyboardRef={keyboardRef} />
       <Keyboard onPlay={playNote} ref={keyboardRef} />
     </div>
