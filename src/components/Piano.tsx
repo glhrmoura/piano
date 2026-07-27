@@ -2,13 +2,19 @@ import React, { useRef, useCallback, useEffect } from 'react';
 import { Dashboard } from '@/components/Dashboard';
 import { Keyboard } from '@/components/Keyboard';
 import { useNotes } from '@/hooks/useNotes';
+import { unlockAudio } from '@/utils/audio';
 
 export const Piano: React.FC = () => {
   const keyboardRef = useRef<HTMLDivElement>(null);
   const notes = useNotes();
 
   const playNote = useCallback((note: string) => {
-    notes[note]?.play();
+    const sound = notes[note];
+    if (!sound) return;
+
+    unlockAudio();
+    sound.stop();
+    sound.play();
   }, [notes]);
 
   const handleScroll = useCallback((direction: number) => {
@@ -28,6 +34,22 @@ export const Piano: React.FC = () => {
   const handleNext = useCallback(() => {
     handleScroll(500);
   }, [handleScroll]);
+
+  useEffect(() => {
+    const unlockOnGesture = () => {
+      unlockAudio();
+    };
+
+    window.addEventListener('pointerdown', unlockOnGesture, { once: true });
+    window.addEventListener('touchstart', unlockOnGesture, { once: true });
+    window.addEventListener('keydown', unlockOnGesture, { once: true });
+
+    return () => {
+      window.removeEventListener('pointerdown', unlockOnGesture);
+      window.removeEventListener('touchstart', unlockOnGesture);
+      window.removeEventListener('keydown', unlockOnGesture);
+    };
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

@@ -1,5 +1,4 @@
 import React, { useState, useCallback } from 'react';
-import { useUtils } from '@/hooks/useUtils';
 
 interface PianoKeyProps {
   keyCode: number;
@@ -15,66 +14,43 @@ export const PianoKey: React.FC<PianoKeyProps> = ({
   onPlay
 }) => {
   const [isActive, setIsActive] = useState(false);
-  const { isTouchDevice } = useUtils();
-
-  const handlePlay = useCallback(() => {
-    onPlay(note);
-  }, [note, onPlay]);
 
   const press = useCallback(() => {
     setIsActive(true);
-    handlePlay();
-  }, [handlePlay]);
+    onPlay(note);
+  }, [note, onPlay]);
 
   const release = useCallback(() => {
     setIsActive(false);
   }, []);
 
-  const handleMouseDown = useCallback(() => {
-    if (!isTouchDevice()) {
-      press();
-    }
-  }, [press, isTouchDevice]);
+  const handlePointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0 && event.pointerType === 'mouse') return;
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    press();
+  }, [press]);
 
-  const handleMouseUp = useCallback(() => {
-    if (!isTouchDevice()) {
-      release();
+  const handlePointerUp = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
     }
-  }, [release, isTouchDevice]);
-
-  const handleMouseLeave = useCallback(() => {
-    if (!isTouchDevice()) {
-      release();
-    }
-  }, [release, isTouchDevice]);
-
-  const handleTouchStart = useCallback(() => {
-    if (isTouchDevice()) {
-      press();
-    }
-  }, [press, isTouchDevice]);
-
-  const handleTouchEnd = useCallback(() => {
-    if (isTouchDevice()) {
-      release();
-    }
-  }, [release, isTouchDevice]);
+    release();
+  }, [release]);
 
   const interactionProps = {
     'data-key-code': keyCode,
     'data-note': note,
-    onMouseDown: handleMouseDown,
-    onMouseUp: handleMouseUp,
-    onMouseLeave: handleMouseLeave,
-    onTouchStart: handleTouchStart,
-    onTouchEnd: handleTouchEnd,
+    onPointerDown: handlePointerDown,
+    onPointerUp: handlePointerUp,
+    onPointerCancel: handlePointerUp,
   };
 
   if (isBlack) {
     return (
       <div className="piano-key-black-slot absolute top-0 box-border h-[62%] w-[58%] shadow-[var(--shadow-piano-black-hole)]">
         <div
-          className={`piano-key-black box-border w-full ${
+          className={`piano-key-black box-border w-full touch-manipulation ${
             isActive ? 'active h-[calc(100%-0.35vw)]' : 'h-full'
           }`}
           {...interactionProps}
@@ -85,7 +61,7 @@ export const PianoKey: React.FC<PianoKeyProps> = ({
 
   return (
     <div
-      className={`piano-key-white box-border w-full rounded-b-[0.35vw] ${
+      className={`piano-key-white box-border w-full touch-manipulation rounded-b-[0.35vw] ${
         isActive
           ? 'active h-[99%] shadow-[var(--shadow-piano-white-active)]'
           : 'h-full shadow-[var(--shadow-piano-white)]'
