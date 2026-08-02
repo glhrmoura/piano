@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Howl, Howler } from 'howler';
 import { isIOS, unlockAudio } from '@/utils/audio';
 
@@ -26,15 +26,25 @@ const createNote = (note: string): Howl => {
     preload: true,
     html5: isIOS(),
     format: ['mp3'],
-    xhr: {
-      method: 'GET',
-      withCredentials: false,
-    },
   });
+};
+
+const prefetchAudioFiles = async () => {
+  const batchSize = 8;
+
+  for (let index = 0; index < NOTE_NAMES.length; index += batchSize) {
+    const batch = NOTE_NAMES.slice(index, index + batchSize);
+    await Promise.all(
+      batch.map((note) =>
+        fetch(`/audio/${note}.mp3`, { cache: 'force-cache' }).catch(() => null)
+      )
+    );
+  }
 };
 
 export const useNotes = () => {
   const notesRef = useRef<NotesType>({});
+  const warmedRef = useRef(false);
 
   const getNote = useCallback((note: string): Howl | undefined => {
     if (!NOTE_NAMES.includes(note as typeof NOTE_NAMES[number])) {
@@ -48,27 +58,71 @@ export const useNotes = () => {
     return notesRef.current[note];
   }, []);
 
-  const playNote = useCallback((note: string) => {
-    const sound = getNote(note);
-    if (!sound) return;
+  const preloadAll = useCallback(() => {
+    if (warmedRef.current) return;
+    warmedRef.current = true;
 
     unlockAudio();
 
-    if (sound.playing()) {
-      sound.stop();
-    }
-
-    const playId = sound.play();
-
-    if (sound.state() !== 'loaded') {
-      sound.once('load', () => {
-        unlockAudio();
-        if (!sound.playing(playId)) {
-          sound.play();
+    NOTE_NAMES.forEach((note, index) => {
+      window.setTimeout(() => {
+        const sound = getNote(note);
+        if (sound && sound.state() === 'unloaded') {
+          sound.load();
         }
-      });
-    }
+      }, Math.floor(index / 10) * 40);
+    });
   }, [getNote]);
 
-  return { playNote };
+  useEffect(() => {
+    void prefetchAudioFiles();
+
+    if (!isIOS()) {
+      const idle = window.requestIdleCallback
+        ?? ((callback: IdleRequestCallback) => window.setTimeout(callback, 1));
+
+      const idleId = idle(() => {
+        preloadAll();
+      });
+
+      return () => {
+        if (typeof window.cancelIdleCallback === 'function') {
+          window.cancelIdleCallback(idleId as number);
+        } else {
+          window.clearTimeout(idleId as number);
+        }
+      };
+    }
+  }, [preloadAll]);
+
+  const playNote = useCallback((note: string) => {
+    unlockAudio();
+    preloadAll();
+
+    const sound = getNote(note);
+    if (!sound) return;
+
+    const playNow = () => {
+      if (sound.playing()) {
+        sound.stop();
+      }
+      sound.play();
+    };
+
+    if (sound.state() === 'loaded') {
+      playNow();
+      return;
+    }
+
+    sound.once('load', () => {
+      unlockAudio();
+      playNow();
+    });
+
+    if (sound.state() === 'unloaded') {
+      sound.load();
+    }
+  }, [getNote, preloadAll]);
+
+  return { playNote, preloadAll };
 };

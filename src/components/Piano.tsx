@@ -6,7 +6,7 @@ import { unlockAudio } from '@/utils/audio';
 
 export const Piano: React.FC = () => {
   const keyboardRef = useRef<HTMLDivElement>(null);
-  const { playNote } = useNotes();
+  const { playNote, preloadAll } = useNotes();
 
   const handleScroll = useCallback((direction: number) => {
     if (keyboardRef.current) {
@@ -29,6 +29,7 @@ export const Piano: React.FC = () => {
   useEffect(() => {
     const unlockOnGesture = () => {
       unlockAudio();
+      preloadAll();
     };
 
     document.addEventListener('touchstart', unlockOnGesture, { capture: true, passive: true });
@@ -42,7 +43,7 @@ export const Piano: React.FC = () => {
       document.removeEventListener('pointerdown', unlockOnGesture, true);
       document.removeEventListener('click', unlockOnGesture, true);
     };
-  }, []);
+  }, [preloadAll]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
