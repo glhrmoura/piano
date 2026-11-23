@@ -441,6 +441,11 @@
     "@parcel/watcher-win32-ia32" "2.5.1"
     "@parcel/watcher-win32-x64" "2.5.1"
 
+"@rive-app/canvas@^2.55.0":
+  version "2.55.0"
+  resolved "https://registry.yarnpkg.com/@rive-app/canvas/-/canvas-2.55.0.tgz#f9cef959f0a9a90230e9d4ef6bb67721257860fe"
+  integrity sha512-iadVU3Ch/oGivBGD1aylkPe6QgjPEeT3X0HsYOT/tF8PCsvrEeM4ABBwNyzu40R//xpWq5sqG3Y6CLGclFavrw==
+
 "@rolldown/pluginutils@1.0.0-beta.27":
   version "1.0.0-beta.27"
   resolved "https://registry.yarnpkg.com/@rolldown/pluginutils/-/pluginutils-1.0.0-beta.27.tgz#47d2bf4cef6d470b22f5831b420f8964e0bf755f"
@@ -1084,11 +1089,6 @@ normalize-range@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/normalize-range/-/normalize-range-0.1.2.tgz#2d10c06bdfd312ea9777695a4d28439456b75942"
   integrity sha512-bdok/XvKII3nUpklnV6P2hxtMNrCboOjAcyBuQnWEhO665FwrSNRxU+AqpsyvO6LgGYPspN+lu5CLtw4jPRKNA==
-
-pagemap@^1.3.0:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/pagemap/-/pagemap-1.4.1.tgz#de8311ffacbd41f2460dc6b6d8f0a25882576185"
-  integrity sha512-u/67+zneOBPNzf16sNHv25DGNR7k5sAwuTcFETKGWxKaDLiJrIpOTIOLgRMCTliuSC7W9T0mUcFEnFFgqjztqA==
 
 picocolors@^1.1.1:
   version "1.1.1"
