@@ -1,16 +1,44 @@
-import { useRef, useEffect, useCallback, forwardRef } from 'react';
-import type { MutableRefObject } from 'react';
-import { PianoKeyGroup } from '@/components/PianoKeyGroup';
+import { useRef, useEffect, useCallback, useState, forwardRef } from 'react';
+import type { MutableRefObject, PointerEvent as ReactPointerEvent } from 'react';
+import { RuntimeLoader, type Rive } from '@rive-app/canvas';
+import riveWasmUrl from '@rive-app/canvas/rive.wasm?url';
+import { PianoKey } from '@/components/PianoKey';
+import { RiveSegmentCanvas } from '@/components/RiveSegmentCanvas';
+import {
+  PIANO_KEYS_BY_LAYER,
+  PIANO_KEY_BY_NOTE,
+  RIVE_SEGMENTS,
+  STAGE_HEIGHT,
+  STAGE_WIDTH,
+  findKeyByCode,
+} from '@/utils/pianoLayout';
 
 interface KeyboardProps {
   onPlay: (note: string) => void;
 }
 
+interface StageSize {
+  width: number;
+  height: number;
+}
+
+const ASPECT_RATIO = STAGE_WIDTH / STAGE_HEIGHT;
+
+RuntimeLoader.setWasmUrl(riveWasmUrl);
+
+const noteAt = (x: number, y: number) => {
+  const element = document.elementFromPoint(x, y)?.closest<HTMLElement>('[data-note]');
+  return element?.dataset.note ?? null;
+};
+
 export const Keyboard = forwardRef<HTMLDivElement, KeyboardProps>(({ onPlay }, ref) => {
-  const localRef = useRef<HTMLDivElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const instancesRef = useRef(new Map<string, Rive>());
+  const [stage, setStage] = useState<StageSize>({ width: 0, height: 0 });
+  const [buffer, setBuffer] = useState<ArrayBuffer | null>(null);
 
   const setRefs = useCallback((node: HTMLDivElement | null) => {
-    localRef.current = node;
+    scrollRef.current = node;
 
     if (typeof ref === 'function') {
       ref(node);
@@ -23,8 +51,51 @@ export const Keyboard = forwardRef<HTMLDivElement, KeyboardProps>(({ onPlay }, r
   }, [ref]);
 
   useEffect(() => {
-    const keyboard = localRef.current;
-    if (!keyboard) return;
+    let active = true;
+
+    fetch('/piano.riv')
+      .then((response) => response.arrayBuffer())
+      .then((data) => {
+        if (active) setBuffer(data);
+      })
+      .catch(() => null);
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const scroller = scrollRef.current;
+    if (!scroller) return;
+
+    const measure = () => {
+      const availableWidth = scroller.clientWidth;
+      const availableHeight = scroller.clientHeight;
+      let width = availableHeight * ASPECT_RATIO;
+      let height = availableHeight;
+
+      if (width < availableWidth) {
+        width = availableWidth;
+        height = availableWidth / ASPECT_RATIO;
+      }
+
+      setStage({ width, height });
+    };
+
+    measure();
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(scroller);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    const scroller = scrollRef.current;
+    if (!scroller) return;
 
     let startX = 0;
 
@@ -35,88 +106,144 @@ export const Keyboard = forwardRef<HTMLDivElement, KeyboardProps>(({ onPlay }, r
     const onTouchMove = (event: TouchEvent) => {
       const currentX = event.touches[0]?.clientX ?? 0;
       const deltaX = currentX - startX;
-      const maxScrollLeft = keyboard.scrollWidth - keyboard.clientWidth;
-      const atStart = keyboard.scrollLeft <= 0;
-      const atEnd = keyboard.scrollLeft >= maxScrollLeft - 1;
+      const maxScrollLeft = scroller.scrollWidth - scroller.clientWidth;
+      const atStart = scroller.scrollLeft <= 0;
+      const atEnd = scroller.scrollLeft >= maxScrollLeft - 1;
 
       if ((atStart && deltaX > 0) || (atEnd && deltaX < 0)) {
         event.preventDefault();
       }
     };
 
-    keyboard.addEventListener('touchstart', onTouchStart, { passive: true });
-    keyboard.addEventListener('touchmove', onTouchMove, { passive: false });
+    scroller.addEventListener('touchstart', onTouchStart, { passive: true });
+    scroller.addEventListener('touchmove', onTouchMove, { passive: false });
 
     return () => {
-      keyboard.removeEventListener('touchstart', onTouchStart);
-      keyboard.removeEventListener('touchmove', onTouchMove);
+      scroller.removeEventListener('touchstart', onTouchStart);
+      scroller.removeEventListener('touchmove', onTouchMove);
     };
   }, []);
 
-  const keyGroups = [
-    { white: { keyCode: 20, note: 'A0' }, black: { keyCode: 81, note: 'A0s' } },
-    { white: { keyCode: 83, note: 'B0' } },
-    { white: { keyCode: 20, note: 'C1' }, black: { keyCode: 81, note: 'C1s' } },
-    { white: { keyCode: 65, note: 'D1' }, black: { keyCode: 87, note: 'D1s' } },
-    { white: { keyCode: 83, note: 'E1' } },
-    { white: { keyCode: 68, note: 'F1' }, black: { keyCode: 82, note: 'F1s' } },
-    { white: { keyCode: 70, note: 'G1' }, black: { keyCode: 84, note: 'G1s' } },
-    { white: { keyCode: 71, note: 'A1' }, black: { keyCode: 89, note: 'A1s' } },
-    { white: { keyCode: 72, note: 'B1' } },
-    { white: { keyCode: 20, note: 'C2' }, black: { keyCode: 81, note: 'C2s' } },
-    { white: { keyCode: 65, note: 'D2' }, black: { keyCode: 87, note: 'D2s' } },
-    { white: { keyCode: 83, note: 'E2' } },
-    { white: { keyCode: 68, note: 'F2' }, black: { keyCode: 82, note: 'F2s' } },
-    { white: { keyCode: 70, note: 'G2' }, black: { keyCode: 84, note: 'G2s' } },
-    { white: { keyCode: 71, note: 'A2' }, black: { keyCode: 89, note: 'A2s' } },
-    { white: { keyCode: 72, note: 'B2' } },
-    { white: { keyCode: 20, note: 'C3' }, black: { keyCode: 81, note: 'C3s' } },
-    { white: { keyCode: 65, note: 'D3' }, black: { keyCode: 87, note: 'D3s' } },
-    { white: { keyCode: 83, note: 'E3' } },
-    { white: { keyCode: 68, note: 'F3' }, black: { keyCode: 82, note: 'F3s' } },
-    { white: { keyCode: 70, note: 'G3' }, black: { keyCode: 84, note: 'G3s' } },
-    { white: { keyCode: 71, note: 'A3' }, black: { keyCode: 89, note: 'A3s' } },
-    { white: { keyCode: 72, note: 'B3' } },
-    { white: { keyCode: 20, note: 'C4' }, black: { keyCode: 81, note: 'C4s' } },
-    { white: { keyCode: 65, note: 'D4' }, black: { keyCode: 87, note: 'D4s' } },
-    { white: { keyCode: 83, note: 'E4' } },
-    { white: { keyCode: 68, note: 'F4' }, black: { keyCode: 82, note: 'F4s' } },
-    { white: { keyCode: 70, note: 'G4' }, black: { keyCode: 84, note: 'G4s' } },
-    { white: { keyCode: 71, note: 'A4' }, black: { keyCode: 89, note: 'A4s' } },
-    { white: { keyCode: 72, note: 'B4' } },
-    { white: { keyCode: 20, note: 'C5' }, black: { keyCode: 81, note: 'C5s' } },
-    { white: { keyCode: 65, note: 'D5' }, black: { keyCode: 87, note: 'D5s' } },
-    { white: { keyCode: 83, note: 'E5' } },
-    { white: { keyCode: 68, note: 'F5' }, black: { keyCode: 82, note: 'F5s' } },
-    { white: { keyCode: 70, note: 'G5' }, black: { keyCode: 84, note: 'G5s' } },
-    { white: { keyCode: 71, note: 'A5' }, black: { keyCode: 89, note: 'A5s' } },
-    { white: { keyCode: 72, note: 'B5' } },
-    { white: { keyCode: 20, note: 'C6' }, black: { keyCode: 81, note: 'C6s' } },
-    { white: { keyCode: 65, note: 'D6' }, black: { keyCode: 87, note: 'D6s' } },
-    { white: { keyCode: 83, note: 'E6' } },
-    { white: { keyCode: 68, note: 'F6' }, black: { keyCode: 82, note: 'F6s' } },
-    { white: { keyCode: 70, note: 'G6' }, black: { keyCode: 84, note: 'G6s' } },
-    { white: { keyCode: 71, note: 'A6' }, black: { keyCode: 89, note: 'A6s' } },
-    { white: { keyCode: 72, note: 'B6' } },
-    { white: { keyCode: 20, note: 'C7' }, black: { keyCode: 81, note: 'C7s' } },
-    { white: { keyCode: 65, note: 'D7' }, black: { keyCode: 87, note: 'D7s' } },
-    { white: { keyCode: 83, note: 'E7' } },
-    { white: { keyCode: 68, note: 'F7' }, black: { keyCode: 82, note: 'F7s' } },
-    { white: { keyCode: 70, note: 'G7' }, black: { keyCode: 84, note: 'G7s' } },
-    { white: { keyCode: 71, note: 'A7' }, black: { keyCode: 89, note: 'A7s' } },
-    { white: { keyCode: 72, note: 'B7' } },
-    { white: { keyCode: 83, note: 'C8' } },
-  ];
+  const handleReady = useCallback((id: string, rive: Rive | null) => {
+    if (rive) {
+      instancesRef.current.set(id, rive);
+    } else {
+      instancesRef.current.delete(id);
+    }
+  }, []);
+
+  const setPressed = useCallback((note: string, pressed: boolean) => {
+    const key = PIANO_KEY_BY_NOTE.get(note);
+    if (!key) return;
+
+    key.targets.forEach(({ segment, path }) => {
+      const rive = instancesRef.current.get(segment);
+      if (!rive) return;
+
+      if (path) {
+        rive.setBooleanStateAtPath('pressed', pressed, path);
+        return;
+      }
+
+      const input = rive.stateMachineInputs('Press')?.find((item) => item.name === 'pressed');
+      if (input) input.value = pressed;
+    });
+  }, []);
+
+  const press = useCallback((note: string) => {
+    setPressed(note, true);
+    onPlay(note);
+  }, [onPlay, setPressed]);
+
+  const release = useCallback((note: string) => {
+    setPressed(note, false);
+  }, [setPressed]);
+
+  const glideRef = useRef<{ pointerId: number; note: string | null } | null>(null);
+
+  const handlePointerDown = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'touch' || event.button !== 0) return;
+
+    const note = (event.target as HTMLElement).closest<HTMLElement>('[data-note]')?.dataset.note;
+    if (!note) return;
+
+    event.currentTarget.setPointerCapture(event.pointerId);
+    glideRef.current = { pointerId: event.pointerId, note };
+    press(note);
+  }, [press]);
+
+  const handlePointerMove = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
+    const glide = glideRef.current;
+    if (!glide || glide.pointerId !== event.pointerId) return;
+
+    const note = noteAt(event.clientX, event.clientY);
+    if (note === glide.note) return;
+
+    if (glide.note) release(glide.note);
+    if (note) press(note);
+    glide.note = note;
+  }, [press, release]);
+
+  const handlePointerUp = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
+    const glide = glideRef.current;
+    if (!glide || glide.pointerId !== event.pointerId) return;
+
+    if (glide.note) release(glide.note);
+    glideRef.current = null;
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  }, [release]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const key = findKeyByCode(event.which);
+      if (key) press(key.note);
+    };
+
+    const handleKeyUp = (event: KeyboardEvent) => {
+      const key = findKeyByCode(event.which);
+      if (key) release(key.note);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [press, release]);
 
   return (
-    <div className="keyboard-bed relative z-0 h-full w-full overflow-x-auto overflow-y-hidden scrollbar-hide" ref={setRefs}>
-      <div className="box-border flex h-full w-max min-w-[800px] gap-[0.2vw] px-[1.2vw] pb-[1.8vh] pt-[0.6vh]">
-        {keyGroups.map((group, index) => (
-          <PianoKeyGroup
-            key={index}
-            whiteKey={group.white}
-            blackKey={group.black}
-            onPlay={onPlay}
+    <div
+      className="keyboard-bed keyboard-scroll relative z-0 h-full w-full overflow-x-auto overflow-y-hidden scrollbar-hide"
+      ref={setRefs}
+    >
+      <div
+        className="relative"
+        style={{ width: stage.width, height: stage.height }}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+      >
+        {buffer && stage.width > 0 && RIVE_SEGMENTS.map((segment) => (
+          <RiveSegmentCanvas
+            key={segment.id}
+            segment={segment}
+            buffer={buffer}
+            stageWidth={stage.width}
+            onReady={handleReady}
+          />
+        ))}
+        {PIANO_KEYS_BY_LAYER.map((pianoKey) => (
+          <PianoKey
+            key={pianoKey.note}
+            pianoKey={pianoKey}
+            onPress={press}
+            onRelease={release}
           />
         ))}
       </div>
