@@ -1,12 +1,15 @@
-import React, { useRef, useCallback, useEffect } from 'react';
+import React, { useRef, useCallback, useEffect, useState } from 'react';
 import { Dashboard } from '@/components/Dashboard';
 import { Keyboard } from '@/components/Keyboard';
+import { LoadingScreen } from '@/components/LoadingScreen';
 import { useNotes } from '@/hooks/useNotes';
 import { unlockAudio } from '@/utils/audio';
 
 export const Piano: React.FC = () => {
   const keyboardRef = useRef<HTMLDivElement>(null);
   const { playNote, preloadAll } = useNotes();
+  const [ready, setReady] = useState(false);
+  const handleReady = useCallback(() => setReady(true), []);
 
   const handleScroll = useCallback((direction: number) => {
     if (keyboardRef.current) {
@@ -48,7 +51,8 @@ export const Piano: React.FC = () => {
   return (
     <div className="piano-shell relative grid w-screen grid-cols-1 grid-rows-[0.28fr_1fr] box-border overflow-hidden">
       <Dashboard onPrevious={handlePrevious} onNext={handleNext} keyboardRef={keyboardRef} />
-      <Keyboard onPlay={playNote} ref={keyboardRef} />
+      <Keyboard onPlay={playNote} onReady={handleReady} ref={keyboardRef} />
+      <LoadingScreen ready={ready} />
     </div>
   );
 };

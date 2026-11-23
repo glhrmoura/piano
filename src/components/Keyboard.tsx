@@ -15,6 +15,7 @@ import {
 
 interface KeyboardProps {
   onPlay: (note: string) => void;
+  onReady?: () => void;
 }
 
 interface StageSize {
@@ -31,7 +32,7 @@ const noteAt = (x: number, y: number) => {
   return element?.dataset.note ?? null;
 };
 
-export const Keyboard = forwardRef<HTMLDivElement, KeyboardProps>(({ onPlay }, ref) => {
+export const Keyboard = forwardRef<HTMLDivElement, KeyboardProps>(({ onPlay, onReady }, ref) => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const instancesRef = useRef(new Map<string, Rive>());
   const [stage, setStage] = useState<StageSize>({ width: 0, height: 0 });
@@ -124,11 +125,23 @@ export const Keyboard = forwardRef<HTMLDivElement, KeyboardProps>(({ onPlay }, r
     };
   }, []);
 
+  const readyRef = useRef(false);
+  const onReadyRef = useRef(onReady);
+
+  onReadyRef.current = onReady;
+
   const handleReady = useCallback((id: string, rive: Rive | null) => {
     if (rive) {
       instancesRef.current.set(id, rive);
     } else {
       instancesRef.current.delete(id);
+    }
+
+    if (!readyRef.current && instancesRef.current.size === RIVE_SEGMENTS.length) {
+      readyRef.current = true;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => onReadyRef.current?.());
+      });
     }
   }, []);
 

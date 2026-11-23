@@ -20,9 +20,114 @@
       integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
       crossorigin="anonymous"
     />
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #0d0d0d;
+      }
+
+      .loading-screen {
+        --loading-key-width: 14px;
+        --loading-key-gap: 3px;
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 22px;
+        background:
+          radial-gradient(60% 50% at 50% 45%, rgba(255, 255, 255, 0.035), transparent 70%),
+          #0d0d0d;
+        opacity: 1;
+        transition: opacity 0.7s ease, visibility 0.7s ease;
+      }
+
+      .loading-screen-hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .loading-keys {
+        position: relative;
+        display: flex;
+        gap: var(--loading-key-gap);
+        height: 56px;
+      }
+
+      .loading-key-white {
+        width: var(--loading-key-width);
+        height: 100%;
+        border-radius: 0 0 3px 3px;
+        background: #f2f2f2;
+        opacity: 0.16;
+        animation: loading-wave 1.6s ease-in-out infinite;
+      }
+
+      .loading-key-black {
+        position: absolute;
+        top: 0;
+        width: 9px;
+        height: 60%;
+        border-radius: 0 0 2px 2px;
+        background: #0d0d0d;
+        transform: translateX(-50%);
+      }
+
+      .loading-felt {
+        width: 64px;
+        height: 2px;
+        border-radius: 2px;
+        background: #6e1b21;
+        opacity: 0.85;
+      }
+
+      @keyframes loading-wave {
+        0%,
+        100% {
+          opacity: 0.16;
+        }
+
+        35% {
+          opacity: 0.95;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .loading-key-white {
+          animation: none;
+          opacity: 0.6;
+        }
+
+        .loading-screen {
+          transition: none;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="loading-screen" role="status" aria-live="polite" aria-label="Loading piano">
+        <div class="loading-keys" aria-hidden="true">
+          <span class="loading-key-white" style="animation-delay: 0.00s"></span>
+          <span class="loading-key-white" style="animation-delay: 0.11s"></span>
+          <span class="loading-key-white" style="animation-delay: 0.22s"></span>
+          <span class="loading-key-white" style="animation-delay: 0.33s"></span>
+          <span class="loading-key-white" style="animation-delay: 0.44s"></span>
+          <span class="loading-key-white" style="animation-delay: 0.55s"></span>
+          <span class="loading-key-white" style="animation-delay: 0.66s"></span>
+          <span class="loading-key-black" style="left: calc(1 * (var(--loading-key-width) + var(--loading-key-gap)) - var(--loading-key-gap) / 2)"></span>
+          <span class="loading-key-black" style="left: calc(2 * (var(--loading-key-width) + var(--loading-key-gap)) - var(--loading-key-gap) / 2)"></span>
+          <span class="loading-key-black" style="left: calc(4 * (var(--loading-key-width) + var(--loading-key-gap)) - var(--loading-key-gap) / 2)"></span>
+          <span class="loading-key-black" style="left: calc(5 * (var(--loading-key-width) + var(--loading-key-gap)) - var(--loading-key-gap) / 2)"></span>
+          <span class="loading-key-black" style="left: calc(6 * (var(--loading-key-width) + var(--loading-key-gap)) - var(--loading-key-gap) / 2)"></span>
+        </div>
+        <span class="loading-felt" aria-hidden="true"></span>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
