@@ -4,6 +4,9 @@ import { isIOS, unlockAudio } from '@/utils/audio';
 
 type NotesType = Record<string, Howl>;
 
+const ATTACK_FADE_MS = 6;
+const RELEASE_FADE_MS = 40;
+
 const NOTE_NAMES = [
   'A0', 'A0s', 'B0',
   'C1', 'C1s', 'D1', 'D1s', 'E1', 'F1', 'F1s', 'G1', 'G1s', 'A1', 'A1s', 'B1',
@@ -45,6 +48,7 @@ const prefetchAudioFiles = async () => {
 export const useNotes = () => {
   const notesRef = useRef<NotesType>({});
   const warmedRef = useRef(false);
+  const lastIdsRef = useRef<Record<string, number>>({});
 
   const getNote = useCallback((note: string): Howl | undefined => {
     if (!NOTE_NAMES.includes(note as typeof NOTE_NAMES[number])) {
@@ -103,10 +107,17 @@ export const useNotes = () => {
     if (!sound) return;
 
     const playNow = () => {
-      if (sound.playing()) {
-        sound.stop();
+      const previousId = lastIdsRef.current[note];
+
+      if (previousId !== undefined && sound.playing(previousId)) {
+        sound.fade(sound.volume(previousId) as number, 0, RELEASE_FADE_MS, previousId);
+        window.setTimeout(() => sound.stop(previousId), RELEASE_FADE_MS + 10);
       }
-      sound.play();
+
+      const id = sound.play();
+      sound.volume(0, id);
+      sound.fade(0, 1, ATTACK_FADE_MS, id);
+      lastIdsRef.current[note] = id;
     };
 
     if (sound.state() === 'loaded') {
