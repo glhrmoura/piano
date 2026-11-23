@@ -45,36 +45,6 @@ export const Piano: React.FC = () => {
     };
   }, [preloadAll]);
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const pianoKey = document.querySelector(`[data-key-code='${event.which}']`) as HTMLElement;
-
-      if (!pianoKey) return;
-
-      const note = pianoKey.getAttribute('data-note');
-      if (!note) return;
-
-      pianoKey.classList.add('active');
-      playNote(note);
-    };
-
-    const handleKeyUp = (event: KeyboardEvent) => {
-      const pianoKey = document.querySelector(`[data-key-code='${event.which}']`) as HTMLElement;
-
-      if (!pianoKey) return;
-
-      pianoKey.classList.remove('active');
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [playNote]);
-
   return (
     <div className="piano-shell relative grid w-screen grid-cols-1 grid-rows-[0.28fr_1fr] box-border overflow-hidden">
       <Dashboard onPrevious={handlePrevious} onNext={handleNext} keyboardRef={keyboardRef} />
