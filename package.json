@@ -10,8 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@rive-app/canvas": "^2.55.0",
     "howler": "^2.2.0",
-    "pagemap": "^1.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
